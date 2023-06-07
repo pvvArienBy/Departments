@@ -120,10 +120,18 @@ public class DepartmentJDBCDao implements IDepartmentDao {
             conn.commit();
 
             if (item.getParent() > 0) {
+                if (!departmentExists(item.getParent())) {
+                    throw new RuntimeException("Родительский департамент с идентификатором " + item.getParent() + " не найден в базе данных.");
+                }
                 addParent(item.getParent(), depId);
             }
 
-            if (!item.getChildren().isEmpty() ) {
+            if (!item.getChildren().isEmpty()) {
+                for (long childId : item.getChildren()) {
+                    if (!departmentExists(childId)) {
+                        throw new RuntimeException("Дочерний департамент с идентификатором " + childId + " не найден в базе данных.");
+                    }
+                }
                 addChildren(depId, item.getChildren());
             }
 
@@ -221,4 +229,18 @@ public class DepartmentJDBCDao implements IDepartmentDao {
         return locationDTO;
     }
 
+
+    private boolean departmentExists(long depId) throws SQLException {
+        try (Connection conn = DatabaseConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM app.departments WHERE dep_id = ?")) {
+            ps.setLong(1, depId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            } else {
+                return false;
+            }
+        }
+    }
 }

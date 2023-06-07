@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.List;
 
 
 @WebServlet(urlPatterns = "/api/add-dep")
@@ -34,12 +36,15 @@ public class CreateDepartmentServlet extends HttpServlet {
        req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json");
 
+
+        PrintWriter writer = resp.getWriter();
         InputStream requestBody = req.getInputStream();
         ObjectMapper mapper = new ObjectMapper();
         DepartmentCreateDTO departmentCreateDTO = mapper.readValue(requestBody, DepartmentCreateDTO.class);
 
         DepartmentDTO departmentDTO = departmentService.add(departmentCreateDTO);
 
-        resp.getWriter().write(mapper.writeValueAsString(departmentDTO));
+        writer.write(mapper.writeValueAsString(departmentDTO));
+
     }
 }
