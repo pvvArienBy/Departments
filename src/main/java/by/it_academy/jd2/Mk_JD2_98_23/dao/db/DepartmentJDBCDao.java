@@ -95,7 +95,7 @@ public class DepartmentJDBCDao implements IDepartmentDao {
 
 
     @Override
-    public DepartmentDTO add(DepartmentCreateDTO item) {
+    public DepartmentDTO add(DepartmentDTO item) {
         try (Connection conn = DatabaseConnectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(INSERT_ADD_DEPARTMENT_SQL, RETURN_GENERATED_KEYS)) {
 
@@ -103,7 +103,7 @@ public class DepartmentJDBCDao implements IDepartmentDao {
 
             ps.setString(1, item.getName());
             ps.setString(2, item.getPhoneNumber());
-            ps.setLong(3, item.getLocation());
+            ps.setLong(3, item.getLocation().getId());
 
             int affectedRows = ps.executeUpdate();
 
@@ -114,28 +114,29 @@ public class DepartmentJDBCDao implements IDepartmentDao {
             long depId;
             if (generatedKeys.next()) {
                 depId = generatedKeys.getLong(1);
+                item.setId(depId);
             } else {
                 throw new SQLException("Не удалось создать отдел, идентификатор не получен.");
             }
             conn.commit();
 
-            if (item.getParent() > 0) {
-                if (!departmentExists(item.getParent())) {
+            if (item.getParent() != null) {
+                if (!departmentExists(item.getParent().getId())) {
                     throw new RuntimeException("Родительский департамент с идентификатором " + item.getParent() + " не найден в базе данных.");
                 }
-                addParent(item.getParent(), depId);
+                addParent(item.getParent().getId(), depId);
             }
 
             if (!item.getChildren().isEmpty()) {
-                for (long childId : item.getChildren()) {
-                    if (!departmentExists(childId)) {
+                for (DepartmentShortDTO childId : item.getChildren()) {
+                    if (!departmentExists(childId.getId())) {
                         throw new RuntimeException("Дочерний департамент с идентификатором " + childId + " не найден в базе данных.");
                     }
                 }
-                addChildren(depId, item.getChildren());
+                    addChildren(depId, item.getChildren());
             }
 
-            return get(depId);
+            return item;
         } catch (SQLException e) {
             throw new RuntimeException("Error inserting department: " + e.getMessage(), e);
         }
@@ -174,13 +175,13 @@ public class DepartmentJDBCDao implements IDepartmentDao {
         return dtoParent;
     }
 
-    private void addChildren(long id, List<Long> list) {
+    private void addChildren(long id, List<DepartmentShortDTO> list) {
         try (Connection conn = DatabaseConnectionFactory.getConnection();
              PreparedStatement ps2 = conn.prepareStatement(INSERT_ADD_HEAD_SUB_SQL)) {
 
-            for (Long child : list) {
+            for (DepartmentShortDTO child : list) {
                 ps2.setLong(1, id);
-                ps2.setLong(2, child);
+                ps2.setLong(2, child.getId());
                 ps2.executeUpdate();
             }
 
@@ -208,7 +209,6 @@ public class DepartmentJDBCDao implements IDepartmentDao {
 
         return listChild;
     }
-
 
     @Override
     public LocationDTO getLocation (long id) {

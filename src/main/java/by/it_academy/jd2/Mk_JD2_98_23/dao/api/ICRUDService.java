@@ -6,5 +6,6 @@ public interface ICRUDService<T, S> {
     List<T> get();
 
     T get(long id);
+    T add (T item);
 }
 

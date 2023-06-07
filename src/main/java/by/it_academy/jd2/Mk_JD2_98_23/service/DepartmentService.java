@@ -7,6 +7,7 @@ import by.it_academy.jd2.Mk_JD2_98_23.core.dto.LocationDTO;
 import by.it_academy.jd2.Mk_JD2_98_23.dao.api.IDepartmentDao;
 import by.it_academy.jd2.Mk_JD2_98_23.service.api.IDepartmentService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DepartmentService implements IDepartmentService {
@@ -19,7 +20,19 @@ public class DepartmentService implements IDepartmentService {
 
     @Override
     public DepartmentDTO add(DepartmentCreateDTO item) {
-        return departmentDao.add(item);
+        DepartmentDTO dto = new DepartmentDTO();
+        dto.setName(item.getName());
+        dto.setParent(getParent(item.getParent()));
+
+        List<DepartmentShortDTO> listShortDto = new ArrayList<>();
+        for (Long child : item.getChildren()) {
+            listShortDto.add(getShort(child));
+        }
+        dto.setChildren(listShortDto);
+        dto.setPhoneNumber(item.getPhoneNumber());
+        dto.setLocation(departmentDao.getLocation(item.getLocation()));
+
+        return departmentDao.add(dto);
     }
 
     @Override
