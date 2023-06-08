@@ -8,9 +8,12 @@ import by.it_academy.jd2.Mk_JD2_98_23.core.dto.LocationDTO;
 import java.util.List;
 
 public interface IDepartmentService extends ICRUDService<DepartmentDTO, DepartmentCreateDTO> {
-    DepartmentDTO add (DepartmentCreateDTO item);
+
     DepartmentShortDTO getShort(long id);
+
     DepartmentShortDTO getParent(long id);
+
     List<DepartmentShortDTO> getChildren(long id);
+
     LocationDTO getLocation (long id);
 }

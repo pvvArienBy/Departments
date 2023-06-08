@@ -65,4 +65,9 @@ public class DepartmentService implements IDepartmentService {
     public DepartmentDTO get(int id) {
         return departmentDao.get(id);
     }
+
+    @Override
+    public DepartmentDTO get(DepartmentCreateDTO item) {
+        return null;
+    }
 }
