@@ -1,6 +1,5 @@
 package by.it_academy.jd2.Mk_JD2_98_23.dao.db;
 
-import by.it_academy.jd2.Mk_JD2_98_23.core.dto.DepartmentCreateDTO;
 import by.it_academy.jd2.Mk_JD2_98_23.core.dto.DepartmentDTO;
 import by.it_academy.jd2.Mk_JD2_98_23.core.dto.DepartmentShortDTO;
 import by.it_academy.jd2.Mk_JD2_98_23.core.dto.LocationDTO;

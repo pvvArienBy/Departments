@@ -14,4 +14,5 @@ public interface IDepartmentDao extends ICRUDDao<DepartmentDTO> {
     List<DepartmentShortDTO> getChildren(long id);
 
     LocationDTO getLocation (long id);
+
 }
