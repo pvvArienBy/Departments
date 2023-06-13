@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DepartmentService implements IDepartmentService {
 
-    IDepartmentDao departmentDao;
+    private final IDepartmentDao departmentDao;
 
     public DepartmentService(IDepartmentDao departmentDao) {
         this.departmentDao = departmentDao;
